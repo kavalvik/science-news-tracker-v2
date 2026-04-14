@@ -1,0 +1,47 @@
+html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тест RAG чата</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        textarea { width: 100%; padding: 10px; font-size: 16px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        #answer { background: #f0f0f0; padding: 15px; border-radius: 5px; margin-top: 20px; white-space: pre-wrap; }
+        #sources { font-size: 14px; color: #666; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Тест RAG чата (База знаний)</h1>
+    <textarea id="question" rows="3" placeholder="Введите ваш вопрос...">Что такое квантовый компьютер?</textarea><br><br>
+    <button onclick="ask()">Отправить запрос</button>
+    <div id="answer">Ответ появится здесь...</div>
+    <div id="sources"></div>
+
+    <script>
+        async function ask() {
+            const question = document.getElementById('question').value;
+            document.getElementById('answer').innerText = 'Загрузка...';
+            
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/chat/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+                const data = await response.json();
+                document.getElementById('answer').innerHTML = `<strong>Ответ:</strong><br>${data.answer}`;
+                if (data.sources && data.sources.length > 0) {
+                    let sourcesHtml = '<strong>Источники:</strong><ul>';
+                    data.sources.forEach(s => sourcesHtml += `<li>${s.title}</li>`);
+                    sourcesHtml += '</ul>';
+                    document.getElementById('sources').innerHTML = sourcesHtml;
+                }
+            } catch (error) {
+                document.getElementById('answer').innerText = 'Ошибка: ' + error;
+            }
+        }
+    </script>
+</body>
+</html>

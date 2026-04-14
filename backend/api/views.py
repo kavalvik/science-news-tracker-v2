@@ -24,7 +24,17 @@ def search(request):
 @api_view(['POST'])
 def chat(request):
     """Чат-бот: ищет в базе знаний и отвечает через Gemini"""
-    question = request.data.get('question', '')
+    if request.body:
+        import json
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            question = data.get('question', '')
+        except:
+            question = request.data.get('question', '')
+    else:
+        question = request.data.get('question', '')
+
+        
     if not question:
         return Response({'error': 'Question is required'}, status=400)
     
