@@ -1,4 +1,5 @@
 from django.db import models
+from pgvector.django import VectorField
 
 class Article(models.Model):
     title = models.CharField(max_length=500, verbose_name="Заголовок")
@@ -6,6 +7,7 @@ class Article(models.Model):
     source = models.CharField(max_length=200, blank=True, verbose_name="Источник")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    #embedding = VectorField(dimensions=384, null=True, blank=True)  # <-- добавить эту строку
     
     class Meta:
         verbose_name = "Статья"
